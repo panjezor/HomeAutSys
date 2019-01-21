@@ -1,0 +1,10 @@
+-u=use
+-s=select
+-f=from
+-w=where
+-c = create
+-t = table
+-dt = database
+-i = index
+-up = update
+-d = drop

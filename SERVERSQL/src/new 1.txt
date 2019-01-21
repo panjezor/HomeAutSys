@@ -1,0 +1,22 @@
+String sCommand = null;
+//in the loop
+if command coming through
+void commandInput(Char input){
+	//command broken down
+	String[] com;
+	//if newline here
+	if(input == "/n"){
+		char i = input;
+		//ready for switch case
+		com =  sCommand.split(";");
+		Switch case....
+		
+		
+		
+		//once commands complete
+		sCommand = null;
+	
+	}else{
+		sCommand += input;
+	}
+}
