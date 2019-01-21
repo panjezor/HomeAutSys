@@ -28,7 +28,7 @@ public class SQL {
     			   
     		try {
     			this.dbName = database; 
-    			this.dbInfo = new LoadFile(database+".txt");
+    			this.dbInfo = new LoadFile("HOMESMART.txt");
 		//gets the sql class
 				Class.forName("com.mysql.jdbc.Driver");
 			} catch (ClassNotFoundException e1) {
@@ -52,27 +52,28 @@ public class SQL {
 		}
 	   }
 	    //use the SQL
-	   public static void runCommand(String command) {
+	   public static void runCommand(String command, Boolean type) {
 //		   colum=col;
 		   String[] array = command.split(" ");
 			String state = SQLInput(array);
 			try {
 				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(state.toString());
-				
+				ResultSet rs;
+				if(type) {
+				   stmt.executeUpdate(state.toString());
+				}else {
+					rs =  stmt.executeQuery(state.toString());
+				}
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	   }
-	   
 	   //returns value
-	   public static ArrayList returnCommand(String command, int databasename) {
+	   public static ArrayList returnCommand(String command, int table, boolean type) {
 //		   colum=col;
-		   	String database =  (String) masterDatabase.get((masterDatabase.size()-1)).get(databasename);
-		    System.out.println(database);
-		    
+			    
 		   	ArrayList<String> out = new ArrayList<String>();
 			String[] array = command.split(" ");
 			String state = SQLInput(array);
@@ -81,29 +82,32 @@ public class SQL {
 				ResultSet rs = stmt.executeQuery(state);
 				while(rs.next()) {
 					out.add(rs.getString("id"));
-					out.add(rs.getString("name"));
-					out.add(rs.getString("sensorID"));
-					switch(databasename) {
+					
+					switch(table) {
 							
 					case 0:
-						
+						out.add(rs.getString("foreginid"));
 						break;
 					case 1:
 						out.add(rs.getString("value"));
-						out.add(rs.getString("logs"));
 						break;
+					case 2:
+						out.add(rs.getString("state"));
+						break;
+						
 						}
+					if(type) {
+						out.add(rs.getString("timelog"));
+						out.add(rs.getString("deviceID"));
+					}
 				}
 		} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-				
-				
-			
 			return out;
 	   }
+	   
 	   //changes input to a real command
 	public static String SQLInput(String[] Value) {
 		ArrayList<String> comname = sqlf.getArr(false);
@@ -119,8 +123,7 @@ public class SQL {
 					}
 				}
 			}else {
-				s.append(a);
-				
+				s.append(" "+a+" ");
 			}
 		}
 		s.append(";\n");
@@ -129,14 +132,13 @@ public class SQL {
 	}
 	
 	
-	
 	//creates the databases if they don't exist
 	private void createDatabase() {
 		//get the database values and args from folder
 		ArrayList<String> filec = dbInfo.getArr(true);
 		ArrayList<String> filea = dbInfo.getArr(false);
 		//2darray
-		 ArrayList<ArrayList> databaseFull = new ArrayList<ArrayList>(); 
+	
 		 //database names and args 
 		 ArrayList<String>tdname = new ArrayList<String>(), 
 		 value = new ArrayList<String>();
@@ -146,22 +148,18 @@ public class SQL {
 			String arg = filea.get(i);
 			
 			if(compare.contains("tname")) {
-				databaseFull.add(value);
 				tdname.add(arg);
-				value.clear();
 			}else if(compare.contains("v")) {
 				value.add(arg);
 			}
-			System.out.println();
-			
-		}
-		databaseFull.add(tdname);
+			System.out.println(tdname);
 		
-	
+		}
+
 		//allows to view databases globally
-		masterDatabase = databaseFull;
+
 		//cteates the database
-		int count = (databaseFull.get((databaseFull.size()-1)).size());
+		int count = tdname.size();
 		String query = null;
 		//checks if exists
 			try {
@@ -170,7 +168,7 @@ public class SQL {
 				stmt.executeUpdate(query);
 		    } catch (SQLException e1) {
 				// TODO Auto-generated catch block
-				System.out.println("Already exists");
+				System.out.println(dbName + " Database Already exists");
 			}
 		 //tries to use
 		    try { 
@@ -178,20 +176,22 @@ public class SQL {
 				stmt.executeUpdate(query);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
-				System.out.println("alreading using");
+				System.out.println(dbName +" alreading using");
 			}
 		//tries to create tables
 		    for(int j = 0; j<count; j++) {  
+		    	String values = value.get(j);
+		    	
 		    	try {
-					String values = databaseFull.get(databaseFull.size()-1).get(j).toString();
-					System.out.println(values);
-					query = "CREATE TABLE " + values + "(" +
-							convertArray(databaseFull.get(j))
+					query = "CREATE TABLE " +  dbName +"."+ tdname.get(j) + "(" +
+								value.get(j)
 							+")";
+					System.out.println("QUERY " + query);
 					stmt.executeUpdate(query);
 				} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("Already Exists");
+					e.printStackTrace();
+			
 		}
 	}
 		
@@ -208,12 +208,12 @@ public class SQL {
 	public static void main(String[] args) {
 		SQL hello = new SQL("localhost", "3306", "root", "", "HOMESMART", false);
 		
-		hello.runCommand("-u HOMESMART");
+		hello.runCommand("-u HOMESMART", false);
 	//	hello.runCommand(" -s 'tempName' -f  ");	
 		int database=1;
 		System.out.println(dbInfo);
-		ArrayList<String> out = hello.returnCommand("-s  * -f lightdata",1);
-		System.out.println(out);
+		//ArrayList<String> out = hello.returnCommand("-s  * -f *",1);
+		//System.out.println(out);
 	}
 }
 
