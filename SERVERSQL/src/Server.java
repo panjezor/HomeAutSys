@@ -15,15 +15,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Server extends Thread{
-
+	SettingsObj settings;
 	private ServerSocket serverSocket;
 	private String task = null;
 	public String result;
 	private SQL account, home;
-	private static SQL settings = new SQL("localhost", "3306", "root", "", "settings", false);
+	
 	
 	public static void main(String[] args) {
-	
+		
 		
 		int port;
 		port = 6666;
@@ -39,13 +39,15 @@ public class Server extends Thread{
 	
 	//creates the server
 	public Server(int port) throws IOException{
-
+		
 		//creates the server
 		serverSocket = new ServerSocket(port);
+		settings = new SettingsObj(false) ;
 	}
 	
 	//listens for connection
 	public void run() {
+		
 		try {
 			//waits for connection
 			System.out.println("Running Thread...");
@@ -78,7 +80,7 @@ public class Server extends Thread{
 						}else {
 							String table = array[4];
 							String type = array[5];
-							ArrayList<String> state = connect.returnCommand(command, Integer.parseInt(table), Boolean.parseBoolean(type));
+							ArrayList<String> output = connect.returnCommand(command, Integer.parseInt(table), Boolean.parseBoolean(type));
 											
 								for(String data : output) {
 									out.writeUTF(data);
@@ -87,9 +89,9 @@ public class Server extends Thread{
 						}
 						//to senddata to arduino
 					}else if(compared =="ard") {
-						//	Client ardunio = new Client("127.0.0.1", 99);
-					
-						
+						Client arduino = new Client(settings.getIPArd(), 99, true);
+						arduino.run(array[2]);
+									
 					}//to send data to andriod
 					else if(compared == "and") {
 						

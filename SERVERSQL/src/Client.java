@@ -45,7 +45,9 @@ public class Client {
 			//if just to send data to arduinio
 			if(srvopt){
 			out.writeUTF(argsin);
-			}else {
+			}
+			//else
+			else {
 			
 			}
 			

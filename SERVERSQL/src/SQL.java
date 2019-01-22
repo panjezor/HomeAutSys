@@ -72,6 +72,7 @@ public class SQL {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 	   }
 	   //returns value
 	   public ArrayList<String>  returnCommand(String command, int table, boolean type) {
