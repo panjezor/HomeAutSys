@@ -6,15 +6,21 @@ import java.io.InputStream;
 import java.net.Socket;
 
 public class Client {
-	
+	//vars for connection and what to
 	private static String serverName = null;
 	private static int portConnection ;
-	
+	private boolean srvopt;
 	public static void main(String[] args) {
-			
-		serverName = null;
-		portConnection = 6666;
-		String argsin = args[0];
+		
+	}
+	public Client(String ip, int port, boolean opt) {
+		serverName = ip;
+		portConnection = port;
+		
+	}
+	public void run(String command) {
+		
+		String argsin = command;
 		
 		System.out.println("running");
 		
@@ -34,8 +40,11 @@ public class Client {
 			
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			
+			if(srvopt){
 			out.writeUTF(argsin);
-			
+			}else {
+				
+			}
 			
 			
 			
@@ -46,14 +55,6 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public Client(String ip, int port) {
-		serverName = ip;
-		portConnection = port;
-		
-	}
-	public void run() {
-		
 		
 	}
 }

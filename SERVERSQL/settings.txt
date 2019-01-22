@@ -1,0 +1,2 @@
+tname=settings
+v= `id` INT NOT NULL AUTO_INCREMENT , `settingName` VARCHAR(99) NOT NULL , `value` INT NOT NULL , PRIMARY KEY (`id`), UNIQUE (`settingName`)
