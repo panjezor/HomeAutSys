@@ -13,41 +13,44 @@ public class Client {
 	public static void main(String[] args) {
 		
 	}
+	//sets up the connection
 	public Client(String ip, int port, boolean opt) {
 		serverName = ip;
 		portConnection = port;
 		
 	}
+	//runs the command
 	public void run(String command) {
-		
+		//sets the command
 		String argsin = command;
-		
+		//states running debug
 		System.out.println("running");
-		
+		//creates the socket
 		Socket client;
 		try {
-			//create connecitiion
+			//create connection
 			client = new Socket(serverName, portConnection);
 			//states it connected debug
 			System.out.print("connected to: " + client);
-			//creates input stream
+			//creates input stream from the server
 			InputStream inFromServer = client.getInputStream();
 			
+			//sets up the stream
 			DataInputStream in = new DataInputStream(inFromServer);
 			
 			
 			
-			
+			//to arduino
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
-			
+			//if just to send data to arduinio
 			if(srvopt){
 			out.writeUTF(argsin);
 			}else {
-				
+			
 			}
 			
 			
-			
+			//what is recived
 		    System.out.println(in.readUTF());
 		    client.close();
 		    

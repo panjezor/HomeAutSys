@@ -4,10 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import com.mysql.jdbc.Statement;
 
 
 public class SQL {
-		   private static ArrayList<ArrayList> masterDatabase = null;
+		   private  ArrayList<ArrayList> masterDatabase = null;
 		//install drivers 
 		   private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 		   private String dbUrl;
@@ -20,8 +21,8 @@ public class SQL {
 		   //global vars 
 
 		   public String dbName;
-		   private static java.sql.Statement stmt;
-		   private static Connection conn = null;
+		   private static  java.sql.Statement stmt;
+		   private static  Connection conn = null;
 		
 	
     public SQL(String ip, String port, String username, String password, String database, boolean createT) {	    	
@@ -58,7 +59,7 @@ public class SQL {
 		   String[] array = command.split(" ");
 		   String state = SQLInput(array);
 			try {
-				stmt = conn.createStatement();
+				stmt = (Statement) conn.createStatement();
 				ResultSet rs;
 				if(type) {
 				   stmt.executeUpdate(state.toString());
@@ -73,17 +74,18 @@ public class SQL {
 			}
 	   }
 	   //returns value
-	   public static ArrayList returnCommand(String command, int table, boolean type) {
+	   public ArrayList<String>  returnCommand(String command, int table, boolean type) {
+		   ArrayList<String>  address = new ArrayList<String>();
 //		   colum=col;
-			ArrayList<ArrayList> ret = new ArrayList<ArrayList>();
+		  
 		   	ArrayList<String> out = new ArrayList<String>();
-			String[] array = command.split(" ");
-			String state = SQLInput(array);
+			String[] query = command.split(" ");
+			String state = SQLInput(query);
 			try {
-				stmt = conn.createStatement();
+				stmt = (Statement) conn.createStatement();
 				ResultSet rs = stmt.executeQuery(state);
 				while(rs.next()) {
-					out.clear();
+					
 					out.add(rs.getString("id"));
 					switch(table) {
 							
@@ -96,29 +98,35 @@ public class SQL {
 					case 2:
 						out.add(rs.getString("state"));
 						break;
-						
+					case 3:
+						out.add(rs.getString("SettingName"));
+						out.add(rs.getString("value"));
+						break;
 						}
+					
 					if(type) {
 						out.add(rs.getString("deviceID"));
 						out.add(rs.getString("timelog"));
 						
 					}
-					
-					ret.add(out);
-					System.out.println(ret);
-					
-				}
-				} catch (SQLException e) {
+	
+				address.add(out.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+				out.clear();
+				}   
+			}catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			return ret;
-	   }
+	}
+				return address;
+}
+			
+	   
+	    
 	   public boolean accountCheck(String user, String password) {
 			String query = "SELECT COUNT(1) FROM accounts WHERE user ==" + user +" AND pass=="+password;
 		   
 			try {
-				stmt = conn.createStatement();
+				stmt = (Statement) conn.createStatement();
 				ResultSet rs = stmt.executeQuery(query);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -241,8 +249,6 @@ public class SQL {
 		}
 		return s.toString();
 	}
-	public static void main(String[] args) {
-		
-	}
+	
 }
 

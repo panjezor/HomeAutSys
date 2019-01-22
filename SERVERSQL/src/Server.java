@@ -7,13 +7,20 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Server extends Thread{
+
 	private ServerSocket serverSocket;
 	private String task = null;
 	public String result;
-	private SQL account, home, settings;
-	private ArrayList<SQL> sqlArray = new ArrayList<SQL>();
+	private SQL account, home;
+	private static SQL settings = new SQL("localhost", "3306", "root", "", "settings", false);
 	
 	public static void main(String[] args) {
 	
@@ -32,29 +39,9 @@ public class Server extends Thread{
 	
 	//creates the server
 	public Server(int port) throws IOException{
-		sqlArray.add(account);
-		sqlArray.add(home);
-		sqlArray.add(settings);
-			
+
 		//creates the server
 		serverSocket = new ServerSocket(port);
-	
-		//serverSocket.setSoTimeout(10000);
-		LoadFile file = new LoadFile("state.txt");
-		System.out.println(file);
-		//sets up the system on startup
-		if(file.verfieystate()){
-			account = new SQL("localhost", "3306", "root", "", "account", true);
-			home = new SQL("localhost", "3306", "root", "", "HOMESMART", true);
-			settings = new SQL("localhost", "3306", "root", "", "settings", true);
-			account.runCommand("-u account", false);
-			account.runCommand("INSERT INTO `accounts` (`id`, `user`, `pass`)"
-					+ " VALUES (NULL, 'admin', 'password')", true);
-		}else {
-			account = new SQL("localhost", "3306", "root", "", "account", false);
-			home = new SQL("localhost", "3306", "root", "", "HOMESMART", false);
-			settings = new SQL("localhost", "3306", "root", "", "settings", false);
-		}
 	}
 	
 	//listens for connection
@@ -69,34 +56,56 @@ public class Server extends Thread{
 			DataInputStream input = new DataInputStream(server.getInputStream());
 			
 			while((input.readUTF())!=null) {
+				
 				String s = input.readUTF();
 				if(s != null) {
 					
 					String[] array = s.split(";");
 					String compared = array[0].trim();
 					int value = Integer.parseInt(array[1]);
-					String command = array[3];
+					String command = array[2];
+					
 					System.out.println(array);
+					//sql
 					if(compared=="sql") {
+						//gets the database to change
+						String database = array[3];
+						SQL connect = new SQL("localhost", "3306", "root", "", database, false);
+						
+						//to write to database
 						if(value == 1) {
-							
-							
+							connect.runCommand(command, true);
 						}else {
+							String table = array[4];
+							String type = array[5];
+							ArrayList<String> state = connect.returnCommand(command, Integer.parseInt(table), Boolean.parseBoolean(type));
+											
+								for(String data : output) {
+									out.writeUTF(data);
+								}
 							
 						}
+						//to senddata to arduino
 					}else if(compared =="ard") {
+						//	Client ardunio = new Client("127.0.0.1", 99);
 					
-					}else if(compared == "upd") {
 						
-					}else if(compared =="ale"){
+					}//to send data to andriod
+					else if(compared == "and") {
 						
-					}else {}
+					}
+					//alarm system
+					else if(compared =="ale"){
+						
+					}else {
+						server.close();
+					}
 					
 				}
 			}
 			
 			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
 			//FileInputStream input = new FileInputStream();
 					
 			//String equation = "";
@@ -104,8 +113,38 @@ public class Server extends Thread{
 			
 			
 		}catch(IOException e) {}
+	
 	}
+		   //returns value
+		  
+		   public boolean accountCheck(String user, String password) {
+				String query = "SELECT COUNT(1) FROM accounts WHERE user ==" + user +" AND pass=="+password;
+			   
+				try {
+					java.sql.Statement stmt;
+					Connection conn = null;
+					stmt = conn.createStatement();
+					ResultSet rs = stmt.executeQuery(query);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			   return false;
+		   }
+
+		private String convertArray(ArrayList input) {
+			StringBuilder s = new StringBuilder();
+			for(int i = 0; i<=input.size()-1; i++) {
+				s.append(input.get(i));
+			}
+			return s.toString();
+		}
+	
+	}
+
+
 	
 	
-	
-}
+
