@@ -4,10 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import com.mysql.jdbc.Statement;
 
 
 public class SQL {
-		   private static ArrayList<ArrayList> masterDatabase = null;
+		   private  ArrayList<ArrayList> masterDatabase = null;
 		//install drivers 
 		   private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 		   private String dbUrl;
@@ -19,16 +20,16 @@ public class SQL {
 		   
 		   //global vars 
 
-		   private String dbName;
-		   private static java.sql.Statement stmt;
-		   private static Connection conn = null;
+		   public String dbName;
+		   private static  java.sql.Statement stmt;
+		   private static  Connection conn = null;
 		
 	
     public SQL(String ip, String port, String username, String password, String database, boolean createT) {	    	
     			   
     		try {
     			this.dbName = database; 
-    			this.dbInfo = new LoadFile("HOMESMART.txt");
+    			this.dbInfo = new LoadFile(dbName+".txt");
 		//gets the sql class
 				Class.forName("com.mysql.jdbc.Driver");
 			} catch (ClassNotFoundException e1) {
@@ -42,8 +43,9 @@ public class SQL {
 		 try {
 			 //connects to the database
 			conn = DriverManager.getConnection(dbUrl, user, pass); 
+			if(createT) {
 			createDatabase();
-
+			}
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -55,12 +57,13 @@ public class SQL {
 	   public static void runCommand(String command, Boolean type) {
 //		   colum=col;
 		   String[] array = command.split(" ");
-			String state = SQLInput(array);
+		   String state = SQLInput(array);
 			try {
-				stmt = conn.createStatement();
+				stmt = (Statement) conn.createStatement();
 				ResultSet rs;
 				if(type) {
 				   stmt.executeUpdate(state.toString());
+				   
 				}else {
 					rs =  stmt.executeQuery(state.toString());
 				}
@@ -69,20 +72,22 @@ public class SQL {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 	   }
 	   //returns value
-	   public static ArrayList returnCommand(String command, int table, boolean type) {
+	   public ArrayList<String>  returnCommand(String command, int table, boolean type) {
+		   ArrayList<String>  address = new ArrayList<String>();
 //		   colum=col;
-			    
+		  
 		   	ArrayList<String> out = new ArrayList<String>();
-			String[] array = command.split(" ");
-			String state = SQLInput(array);
+			String[] query = command.split(" ");
+			String state = SQLInput(query);
 			try {
-				stmt = conn.createStatement();
+				stmt = (Statement) conn.createStatement();
 				ResultSet rs = stmt.executeQuery(state);
 				while(rs.next()) {
-					out.add(rs.getString("id"));
 					
+					out.add(rs.getString("id"));
 					switch(table) {
 							
 					case 0:
@@ -94,20 +99,59 @@ public class SQL {
 					case 2:
 						out.add(rs.getString("state"));
 						break;
-						
+					case 3:
+						out.add(rs.getString("SettingName"));
+						out.add(rs.getString("value"));
+						break;
 						}
+					
 					if(type) {
-						out.add(rs.getString("timelog"));
 						out.add(rs.getString("deviceID"));
+						out.add(rs.getString("timelog"));
+						
 					}
-				}
-		} catch (SQLException e) {
+	
+				address.add(out.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+				out.clear();
+				}   
+			}catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+	}
+				return address;
+}
+			
+	   
+	    
+	   public boolean accountCheck(String user, String password) {
+			String query = "SELECT COUNT(1) FROM accounts WHERE user ==" + user +" AND pass=="+password;
+		   
+			try {
+				stmt = (Statement) conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return out;
+			
+			
+		   return false;
 	   }
-	   
+	   public boolean verfiy(String db) {
+		   
+		   String query = "use "+db+";";
+			try {
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				System.out.println(rs);
+				return true;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return false;
+		   
+	   }
 	   //changes input to a real command
 	public static String SQLInput(String[] Value) {
 		ArrayList<String> comname = sqlf.getArr(false);
@@ -124,6 +168,7 @@ public class SQL {
 				}
 			}else {
 				s.append(" "+a+" ");
+				
 			}
 		}
 		s.append(";\n");
@@ -205,15 +250,6 @@ public class SQL {
 		}
 		return s.toString();
 	}
-	public static void main(String[] args) {
-		SQL hello = new SQL("localhost", "3306", "root", "", "HOMESMART", false);
-		
-		hello.runCommand("-u HOMESMART", false);
-	//	hello.runCommand(" -s 'tempName' -f  ");	
-		int database=1;
-		System.out.println(dbInfo);
-		//ArrayList<String> out = hello.returnCommand("-s  * -f *",1);
-		//System.out.println(out);
-	}
+	
 }
 

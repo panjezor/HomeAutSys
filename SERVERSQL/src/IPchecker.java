@@ -4,9 +4,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-
-import static java.lang.Integer.parseInt;
 
 public class IPchecker{
 
@@ -15,42 +12,29 @@ public static double shortmask;
     public static void main(String[] args) throws IOException {
 
         setAdresses();
-        String sub = getTargetSubnet();
+        String sub = getTargetSubnet(10);
         System.out.println(sub);
-        System.out.println(ip);
-        String regex = "\\.";
-        String[] maskbytes = sub.split(regex);
-        String[] ipbytes = ip.split(regex);
-        byte[] maskbyte = new byte[4];
-        byte[] ipbyte = new byte[4];
-        int[] networkbyte = new int[4];
-        int[] broadcastbyte = new int[4];
+shortmask = 32-shortmask;
+        String yo = getIPv4LocalNetMask((int) shortmask);
+        System.out.println(yo);
 
-        for(int a1 = 0; a1<=3; a1++){
-            maskbyte[a1] = (byte)parseInt(maskbytes[a1]);
-            ipbyte[a1] = (byte) parseInt(ipbytes[a1]);
-            networkbyte[a1] =  (maskbyte[a1]&ipbyte[a1]);
-            broadcastbyte[a1] = (ipbyte[a1]&((byte)255));
-            String networkaddress = String.join(".",networkbyte[a1]).;
-        }
+//        for (int i=1;i<255;i++){
+//            String host=hosts + "." + i;
+//            if (InetAddress.getByName(host).isReachable(timeout)){
+//                System.out.println(host + " is reachable");
+//            }
+//        }
 
-        String networkaddress = String.join("\\.",networkbyte);
 
     }
-
-
-
-        public static void setAdresses() throws SocketException, UnknownHostException {
+    public static void setAdresses() throws SocketException, UnknownHostException {
         InetAddress localHost = InetAddress.getLocalHost();
         ip = localHost.getHostAddress();
         NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
         shortmask = 32 - networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength();
     }
-
-
-
     public static String getTargetSubnet(){
-        return getTargetSubnet(shortmask);
+        return getTargetSubnet(2);
     }
     public static String getTargetSubnet(double mask){
         String target;
@@ -64,7 +48,7 @@ public static double shortmask;
                     target = bits+".0.0.0";
 
                 } else {
-
+                    System.out.println("mask 8-15");
                     bits = (int)Math.pow(2, mask-16) - 1;
                     bits = 255-bits;
                     target = "255."+bits+".0.0";
@@ -78,6 +62,7 @@ public static double shortmask;
 
             }
         } else{
+            System.out.println("mask 24-32");
             bits = (int)Math.pow(2, mask) - 1;
             bits = 255-bits;
             target = "255.255.255."+bits;
@@ -86,6 +71,27 @@ public static double shortmask;
         System.out.println("Mask /"+(int)mask);
         return target;
     }
+    public static String getIPv4LocalNetMask(int netPrefix) {
 
-
+        try {
+            // Since this is for IPv4, it's 32 bits, so set the sign value of
+            // the int to "negative"...
+            int shiftby = (1<<31);
+            // For the number of bits of the prefix -1 (we already set the sign bit)
+            for (int i=netPrefix-1; i>0; i--) {
+                // Shift the sign right... Java makes the sign bit sticky on a shift...
+                // So no need to "set it back up"...
+                shiftby = (shiftby >> 1);
+            }
+            // Transform the resulting value in xxx.xxx.xxx.xxx format, like if
+            /// it was a standard address...
+            String maskString = Integer.toString((shiftby >> 24) & 255) + "." + Integer.toString((shiftby >> 16) & 255) + "." + Integer.toString((shiftby >> 8) & 255) + "." + Integer.toString(shiftby & 255);
+            // Return the address thus created...
+            return maskString;
+        }
+        catch(Exception e){e.printStackTrace();
+        }
+        // Something went wrong here...
+        return null;
+    }
 }
