@@ -1,0 +1,2 @@
+tname=account
+v=`id` INT NOT NULL AUTO_INCREMENT , `user` TEXT NOT NULL , `pass` TEXT NOT NULL , PRIMARY KEY (`id`), UNIQUE `user` (`user`(20))
