@@ -41,7 +41,7 @@ public class ArduinoClient implements Runnable{
 				System.out.println(client.isConnected());
 				if(client.isConnected() == true){
 					out = new PrintWriter(client.getOutputStream());
-					out.print("011\n");
+					out.print(command);
 					out.close();
 				}
 				
@@ -57,8 +57,8 @@ public class ArduinoClient implements Runnable{
 				//ArduinoClient a = new ArduinoClient("192.168.1.2", 23, "011\n");
 			//	a.run();
 				
-				Thread t = new Thread(new Client("192.168.1.2", 23, "11\n"));
-			
+				ArduinoClient a = new ArduinoClient ("192.168.1.2", 23, "791\n");
+				a.run();
 				//	t.start();
 			
 		

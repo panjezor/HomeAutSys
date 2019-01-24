@@ -23,9 +23,7 @@ public class Server extends Thread{
 	private SQL account, home;
 	
 	
-	public static void main(String[] args) {
-		
-		
+	public static void main(String[] args) {	
 	}
 	
 	
@@ -40,7 +38,7 @@ public class Server extends Thread{
 	
 	//listens for connection
 	public void run() {
-		
+	while(true) {
 		try {
 			//waits for connection
 			System.out.println("Running Thread...");
@@ -52,19 +50,19 @@ public class Server extends Thread{
 			
 
 				System.out.println("connected");
-				String s = input.readUTF();
-				if(s != null) {
-					
+
+				String s;
+				s = input.readLine(); 
+				System.out.println("dank");
+				System.out.println(s);
 					String[] array = s.split(";");
 					String compared = array[0].trim();
 					String command = array[1];
+					
 					int value = Integer.parseInt(array[2]);
-					
-					
 					System.out.println(array);
-					for(int i=0; i<array.length; i++) {
-					System.out.println(array[i]);
-					}
+					
+					
 					
 							//sql
 					if(compared=="sql") {
@@ -87,12 +85,12 @@ public class Server extends Thread{
 						}
 						//to senddata to arduino
 					}else if(compared.contains("ard")) {
+						System.out.println();
 						System.out.println("hello");
+						System.out.println("Everybody wants to rule the world");
 						
-						Thread t = new Thread(new Client("192.168.1.2"/*settings.getIPArd()*/, 23, array[1].trim()+"\n" ));
-						t.start();
-					
-						
+						Client t = new Client(settings.getIPArd().trim(), 23, array[1].trim()+"\n" );
+						t.run();
 									
 					}//to send data to andriod
 					else if(compared == "and") {
@@ -102,10 +100,11 @@ public class Server extends Thread{
 					else if(compared =="ale"){
 						
 					}else {
+						System.out.println("server closed");
 					//server.close();
 					}
 					
-				}
+				
 			
 			
 			
@@ -117,7 +116,7 @@ public class Server extends Thread{
 			
 			
 		}catch(IOException e) {}
-	
+		}
 	}
 		   //returns value
 		  

@@ -36,38 +36,47 @@ public class Client implements Runnable{
 			String argsin = command;
 			//states running debug
 			System.out.println("running");
-			System.out.println(serverName + ":"+portConnection+" "+ command);
+			
 			//creates the socket
 			Socket client;
 			try {
 				//create connection
 				System.out.println("connecting....");
 				client = new Socket(serverName, portConnection);
-
+				
 				BufferedReader in ;
 			
 				PrintWriter out ;
 				
 				
 				System.out.println(client.isConnected());
-				if(client.isConnected() == true){
-					out = new PrintWriter(client.getOutputStream());
-					out.print(command);
-					out.close();
-				}
-				//if data is needed to be recived
-				if(read) {
 					in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+					
+					
+					
+					System.out.println("command");
+					//if data is needed to be recived
+				out = new PrintWriter(client.getOutputStream());
+				out.print(command);
+				System.out.println("command");
+				if(read) {
+					System.out.println("command");
+					while(in.ready()) {}
 					ArrayList<String> array = new ArrayList<String>();
 					String line;
 					while((line = in.readLine()) != null) {
 					System.out.println(line);
 					array.add(line);
 					}
-					setRecievedArray(array);
+					setReceivedArray(array);
+					
 				}
 				
-				System.out.println("helloworld");
+					
+					
+					out.close();
+				
+				System.out.println("System");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -76,20 +85,22 @@ public class Client implements Runnable{
 			
 		}
 		//sets the data from server
-		public void setRecievedArray(ArrayList<String> input) {
+		public void setReceivedArray(ArrayList<String> input) {
 			this.data = input;
 		}
 		//fetechs data from server
-		public ArrayList<String> getRecievedArray(){
+		public ArrayList<String> getReceivedArray(){
 			return data;
 		}
 		public static void main(String[] args) {
 			//can be used as a thread but can be used as a simple
-				Client a = new Client("192.168.1.2", 23, "011\n");
+				
+				Client a = new Client("192.168.1.4", 8888, "ard;791;0\n");
 				a.run();
+			
 				
 				
-			//	Thread t = new Thread(new Client("192.168.1.2", 23, "21\n", false));
+			//	Thread t = new Thread(new Client("192.168.1.2", 23, "21\n");
 			//	t.start();
 				
 			
