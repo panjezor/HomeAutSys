@@ -5,25 +5,29 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+
+
+
 public class IPchecker{
 
 public static String ip;
-public static double shortmask;
-    public static void main(String[] args) throws IOException {
+public static int shortmask;
+    public static void main(String[] args) throws IOException {}
+    
+    
+    public String[] getIPs() throws SocketException, UnknownHostException {
 
         setAdresses();
-        String sub = getTargetSubnet(10);
+        String sub = getTargetSubnet();
         System.out.println(sub);
-shortmask = 32-shortmask;
+        shortmask = 32-shortmask;
         String yo = getIPv4LocalNetMask((int) shortmask);
         System.out.println(yo);
-
-//        for (int i=1;i<255;i++){
-//            String host=hosts + "." + i;
-//            if (InetAddress.getByName(host).isReachable(timeout)){
-//                System.out.println(host + " is reachable");
-//            }
-//        }
+        
+    //get the IP addresses
+    SubnetUtils subnetInfo = new SubnetUtils(ip+"/"+shortmask);
+    String[] IPAddresses = subnetInfo.getInfo().getAllAddresses();  
+   return IPAddresses;
 
 
     }
@@ -34,7 +38,7 @@ shortmask = 32-shortmask;
         shortmask = 32 - networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength();
     }
     public static String getTargetSubnet(){
-        return getTargetSubnet(2);
+        return getTargetSubnet(shortmask);
     }
     public static String getTargetSubnet(double mask){
         String target;
@@ -94,4 +98,11 @@ shortmask = 32-shortmask;
         // Something went wrong here...
         return null;
     }
+//    public String[] getAllAddresses() { 
+//        String[] addresses = new String[getAddressCount()];
+//        for (int add = low(), j=0; add <= high(); ++add, ++j) {
+//            addresses[j] = format(toArray(add));
+//        }
+//        return addresses;
+//    }
 }
