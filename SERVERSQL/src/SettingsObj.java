@@ -23,7 +23,7 @@ public class SettingsObj {
 			for(int i = 0; i<com.size(); i++) {
 				if(com.get(i).contains("sn")) {
 					query=arg.get(i);	
-					settings.runCommand(query, true);
+					settings.runCommand(query);
 				}
 			}
 		}else {
@@ -31,7 +31,7 @@ public class SettingsObj {
 		}
 		
 		
-		settings.runCommand("-u settings", false);
+		settings.runCommand("-u settings");
 		fileset = settings.returnCommand("-s * -f settings", 3, false);
 		System.out.println(fileset.size());
 		for(int i =0; i<fileset.size(); i++) {

@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Statement;
+import com.mysql.jdbc.Statement;
 
 
 public class SQL {
@@ -54,19 +54,16 @@ public class SQL {
 		}
 	   }
 	    //use the SQL
-	   public static void runCommand(String command, Boolean type) {
+	   public void runCommand(String command) {
 //		   colum=col;
 		   String[] array = command.split(" ");
 		   String state = SQLInput(array);
 			try {
 				stmt = (Statement) conn.createStatement();
-				ResultSet rs;
-				if(type) {
+	
 				   stmt.executeUpdate(state.toString());
 				   
-				}else {
-					rs =  stmt.executeQuery(state.toString());
-				}
+		
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

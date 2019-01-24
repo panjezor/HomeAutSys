@@ -16,30 +16,21 @@ import java.util.ArrayList;
 
 public class Server extends Thread{
 	SettingsObj settings;
+	private int port;
 	private ServerSocket serverSocket;
 	private String task = null;
 	public String result;
 	private SQL account, home;
 	
 	
-	public static void main(String[] args) {
-		
-		
-		int port;
-		port = 6666;
-		try {
-			
-			Thread t = new Server(port);
-			t.start();
-		}catch(IOException e) {
-			e.printStackTrace();
-		}
+	public static void main(String[] args) {	
 	}
 	
 	
 	//creates the server
 	public Server(int port) throws IOException{
 		
+
 		//creates the server
 		serverSocket = new ServerSocket(port);
 		settings = new SettingsObj(false) ;
@@ -47,7 +38,7 @@ public class Server extends Thread{
 	
 	//listens for connection
 	public void run() {
-		
+	while(true) {
 		try {
 			//waits for connection
 			System.out.println("Running Thread...");
@@ -57,18 +48,23 @@ public class Server extends Thread{
 			DataOutputStream out = new DataOutputStream(server.getOutputStream());
 			DataInputStream input = new DataInputStream(server.getInputStream());
 			
-			while((input.readUTF())!=null) {
-				
-				String s = input.readUTF();
-				if(s != null) {
-					
+
+				System.out.println("connected");
+
+				String s;
+				s = input.readLine(); 
+				System.out.println("dank");
+				System.out.println(s);
 					String[] array = s.split(";");
 					String compared = array[0].trim();
-					int value = Integer.parseInt(array[1]);
-					String command = array[2];
+					String command = array[1];
 					
+					int value = Integer.parseInt(array[2]);
 					System.out.println(array);
-					//sql
+					
+					
+					
+							//sql
 					if(compared=="sql") {
 						//gets the database to change
 						String database = array[3];
@@ -76,7 +72,7 @@ public class Server extends Thread{
 						
 						//to write to database
 						if(value == 1) {
-							connect.runCommand(command, true);
+							connect.runCommand(command);
 						}else {
 							String table = array[4];
 							String type = array[5];
@@ -88,9 +84,13 @@ public class Server extends Thread{
 							
 						}
 						//to senddata to arduino
-					}else if(compared =="ard") {
-						Client arduino = new Client(settings.getIPArd(), 99, true);
-						arduino.run(array[2]);
+					}else if(compared.contains("ard")) {
+						System.out.println();
+						System.out.println("hello");
+						System.out.println("Everybody wants to rule the world");
+						
+						Client t = new Client(settings.getIPArd().trim(), 23, array[1].trim()+"\n" );
+						t.run();
 									
 					}//to send data to andriod
 					else if(compared == "and") {
@@ -100,11 +100,12 @@ public class Server extends Thread{
 					else if(compared =="ale"){
 						
 					}else {
-						server.close();
+						System.out.println("server closed");
+					//server.close();
 					}
 					
-				}
-			}
+				
+			
 			
 			
 			
@@ -115,7 +116,7 @@ public class Server extends Thread{
 			
 			
 		}catch(IOException e) {}
-	
+		}
 	}
 		   //returns value
 		  
