@@ -121,11 +121,18 @@ public class SQL {
 	   
 	    
 	   public boolean accountCheck(String user, String password) {
-			String query = "SELECT COUNT(1) FROM accounts WHERE user ==" + user +" AND pass=="+password;
+			String query = "SELECT COUNT(1) FROM account WHERE user ==" + user +" AND pass=="+password;
 		   
 			try {
 				stmt = (Statement) conn.createStatement();
 				ResultSet rs = stmt.executeQuery(query);
+				int check = 0;
+					while(rs.next()) {
+						if(user == rs.getString("user") && password == rs.getString("pass")) {
+							return true;
+						}
+					}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -141,7 +148,7 @@ public class SQL {
 				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(query);
 				System.out.println(rs);
-				return true;
+				return rs.next();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
