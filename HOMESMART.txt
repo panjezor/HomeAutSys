@@ -1,0 +1,8 @@
+tname=rangedata
+v=`ID` INT NOT NULL AUTO_INCREMENT , `deviceID` INT NOT NULL , `timelog` DATE NOT NULL , PRIMARY KEY (`ID`)
+tname=lightdata
+v=`id` INT NOT NULL , `deviceID` INT NOT NULL , `state` INT NOT NULL , `timelog` DATETIME NOT NULL , PRIMARY KEY (`id`)
+tname=tempdata
+v=`id` INT NOT NULL AUTO_INCREMENT , `deviceID` INT NOT NULL , `value` FLOAT NOT NULL , `timelog` DATETIME NOT NULL , PRIMARY KEY (`id`)
+tname=sensordata
+v=`id` INT NOT NULL AUTO_INCREMENT , `foreginid` INT NOT NULL , PRIMARY KEY (`id`)

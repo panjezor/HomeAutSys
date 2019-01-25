@@ -58,11 +58,13 @@ public class Server extends Thread{
 					String[] array = s.split(";");
 					String compared = array[0].trim();
 					String command = array[1];
+
 					//if the array is londer than 2 then include it(for rw and check)
 					int arg0 = 0;
 					if(2<array.length) {
 					arg0 = Integer.parseInt(array[2]);
 					}
+
 					System.out.println(array);
 					
 					
@@ -81,10 +83,12 @@ public class Server extends Thread{
 						}
 						
 						//to write to database
+
 						switch(arg0) {
 						//gets the data and outputs it in a string array
 						case 0:
 							ArrayList<String> output = connect.returnCommand(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));		
+
 								for(String data : output) {
 									out.writeUTF(data);
 								}
