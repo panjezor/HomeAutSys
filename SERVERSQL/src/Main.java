@@ -14,7 +14,8 @@ public class Main {
 			account = new SQL("localhost", "3306", "root", "", "account", true);
 			home = new SQL("localhost", "3306", "root", "", "HOMESMART", true);	
 			account.runCommand("-u account");
-			account.runCommand("INSERT INTO `accounts` (`id`, `user`, `pass`)"
+
+			account.runCommand("INSERT INTO `account` (`id`, `user`, `pass`)"
 					+ " VALUES (NULL, 'admin', 'password')");
 		}else {
 			settings = new SettingsObj(false);
