@@ -58,8 +58,11 @@ public class Server extends Thread{
 					String[] array = s.split(";");
 					String compared = array[0].trim();
 					String command = array[1];
-					
-					int value = Integer.parseInt(array[2]);
+					//if the array is londer than 2 then include it(for rw and check)
+					int arg0 = 0;
+					if(2<array.length) {
+					arg0 = Integer.parseInt(array[2]);
+					}
 					System.out.println(array);
 					
 					
@@ -69,20 +72,33 @@ public class Server extends Thread{
 						//gets the database to change
 						String database = array[3];
 						SQL connect = new SQL("localhost", "3306", "root", "", database, false);
+						//get the arguments(such as table and read and write)
+						String arg1 = "";
+						String arg2 = "";
+						if(array.length <=5) {
+							arg1 = array[4];
+							arg2 = array[5];
+						}
 						
 						//to write to database
-						if(value == 1) {
-							connect.runCommand(command);
-						}else {
-							String table = array[4];
-							String type = array[5];
-							ArrayList<String> output = connect.returnCommand(command, Integer.parseInt(table), Boolean.parseBoolean(type));
-											
+						switch(arg0) {
+						//gets the data and outputs it in a string array
+						case 0:
+							ArrayList<String> output = connect.returnCommand(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));		
 								for(String data : output) {
 									out.writeUTF(data);
 								}
-							
+							break;
+						//just runs a command
+						case 1:
+							connect.runCommand(command);
+							break;
+						//checks account
+						case 2:	
+							int acc = (connect.accountCheck(arg1, arg2) ? 1:0);
+							out.write(acc);
 						}
+						
 						//to senddata to arduino
 					}else if(compared.contains("ard")) {
 						System.out.println();
