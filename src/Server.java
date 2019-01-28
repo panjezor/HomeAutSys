@@ -34,6 +34,7 @@ public class Server extends Thread{
 		//creates the server
 		serverSocket = new ServerSocket(port);
 		settings = new SettingsObj(false) ;
+		System.out.println(settings.getIPArd());
 	}
 	
 	//listens for connection
@@ -52,8 +53,8 @@ public class Server extends Thread{
 				System.out.println("connected");
 
 				String s;
-				s = input.readLine(); 
-				System.out.println("dank");
+				s = input.readUTF(); 
+				
 				System.out.println(s);
 					String[] array = s.split(";");
 					String compared = array[0].trim();
@@ -84,28 +85,34 @@ public class Server extends Thread{
 						switch(arg0) {
 						//gets the data and outputs it in a string array
 						case 0:
-							ArrayList<String> output = connect.returnCommand(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));		
+							ArrayList<String> output = connect.returnCommandArray(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));		
 								for(String data : output) {
 									out.writeUTF(data);
 								}
 							break;
-						//just runs a command
 						case 1:
+							String stringOutput = connect.returnCommandSingle(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));
+							out.writeUTF(stringOutput);
+							break;
+						//just runs a command
+						case 2:
 							connect.runCommand(command);
 							break;
 						//checks account
-						case 2:	
+						
+						case 3:	
 							int acc = (connect.accountCheck(arg1, arg2) ? 1:0);
 							out.write(acc);
+							break;
+						
 						}
 						
 						//to senddata to arduino
 					}else if(compared.contains("ard")) {
-						System.out.println();
-						System.out.println("hello");
-						System.out.println("Everybody wants to rule the world");
-						
-						Client t = new Client(settings.getIPArd().trim(), 23, array[1].trim()+"\n" );
+						for(String S : array) {
+						System.out.println("output to ard" + S);
+						}
+						Client t = new Client(settings.getIPArd().trim(), 23, command+"\n" );
 						t.run();
 									
 					}//to send data to andriod
@@ -114,7 +121,7 @@ public class Server extends Thread{
 					}
 					//alarm system
 					else if(compared =="ale"){
-						
+						Email email = new Email(settings.getEmail(), command);
 					}else {
 						System.out.println("server closed");
 					//server.close();
