@@ -98,11 +98,5 @@ public static int shortmask;
         // Something went wrong here...
         return null;
     }
-//    public String[] getAllAddresses() { 
-//        String[] addresses = new String[getAddressCount()];
-//        for (int add = low(), j=0; add <= high(); ++add, ++j) {
-//            addresses[j] = format(toArray(add));
-//        }
-//        return addresses;
-//    }
+
 }
