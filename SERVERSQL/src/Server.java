@@ -21,23 +21,26 @@ public class Server extends Thread{
 	private String task = null;
 	public String result;
 	private SQL account, home;
-	
+	private boolean opt;
 	
 	public static void main(String[] args) {	
 	}
 	
 	
-	//creates the server
-	public Server(int port) throws IOException{
+	//creates the server and if arduino
+	public Server(int port, boolean opt) throws IOException{
 		
 
 		//creates the server
 		serverSocket = new ServerSocket(port);
 		settings = new SettingsObj(false) ;
 		System.out.println(settings.getIPArd());
+		this.opt = opt;
 	}
 	
 	//listens for connection
+	
+	@SuppressWarnings("deprecation")
 	public void run() {
 	while(true) {
 		try {
@@ -48,18 +51,24 @@ public class Server extends Thread{
 			System.out.println("CONNECTED TO: " + server.getRemoteSocketAddress());
 			 
 				DataInputStream in = new DataInputStream(server.getInputStream());
-	            String s = in.readUTF();
-	            System.out.println(s);
+	            
+				String s = null; 
+				if(opt) {
+					s = in.readLine();	
+				}else if(!opt){
+					s= in.readUTF();
+				}
+				System.out.println(s);
 	            DataOutputStream out = new DataOutputStream(server.getOutputStream());
 				
 	            System.out.println("connected");
 
 		
 		
-			
-				System.out.print("getting command ");
+	            
+					System.out.println("getting command ");
 				 
-					String[] array = s.split(";");
+					String[] array = s.split(":");
 					String compared = array[0].trim();
 					String command = array[1];
 					//if the array is londer than 2 then include it(for rw and check)
@@ -67,7 +76,7 @@ public class Server extends Thread{
 					if(2<array.length) {
 					arg0 = Integer.parseInt(array[2]);
 					}
-					System.out.println(array[3]);
+					System.out.println(array[0]);
 					
 					System.out.println("comparing ");
 					
@@ -131,7 +140,8 @@ public class Server extends Thread{
 						
 					}
 					//alarm system
-					else if(compared =="ale"){
+					else if(compared.contains("ale")){
+						System.out.println("Alarm Triggered!");
 						Email email = new Email(settings.getEmail(), command);
 					}else {
 						System.out.println("server closed");

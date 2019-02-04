@@ -53,9 +53,10 @@ public class Main {
 //					}
 				}
 			}
-				Thread t = new Thread(new Server(8888));
+				Thread t = new Thread(new Server(8888, false));
 				t.start();
-
+				Thread t1 = new Thread(new Server(8889, true));
+				t1.start();
 					
 			
 				

@@ -5,6 +5,7 @@
 -c = create
 -t = table
 -dt = database
--i = index
 -up = update
--d = drop
+-a = insert into
+-v = values
+-ip= CURRENT_TIMESTAMP

@@ -56,6 +56,7 @@ public class SQL {
 	    //use the SQL
 	   public void runCommand(String command) {
 //		   colum=col;
+		   System.out.print(command);
 		   String[] array = command.split(" ");
 		   String state = SQLInput(array);
 			try {
@@ -175,6 +176,8 @@ public class SQL {
 	public static String SQLInput(String[] Value) {
 		ArrayList<String> comname = sqlf.getArr(false);
 		ArrayList<String> comarg = sqlf.getArr(true);
+		System.out.println(comname);
+		System.out.println(comarg);
 	//combines the strings into one string
 		StringBuilder s = new StringBuilder();
 		
@@ -192,6 +195,7 @@ public class SQL {
 		}
 		s.append(";\n");
 		//returns the command ready to go
+		
 		return s.toString();  
 	}
 	
@@ -267,6 +271,7 @@ public class SQL {
 		for(int i = 0; i<=input.size()-1; i++) {
 			s.append(input.get(i));
 		}
+		System.out.println(s.toString());
 		return s.toString();
 	}
 	
