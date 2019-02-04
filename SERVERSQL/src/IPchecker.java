@@ -98,11 +98,43 @@ public static int shortmask;
         // Something went wrong here...
         return null;
     }
-//    public String[] getAllAddresses() { 
-//        String[] addresses = new String[getAddressCount()];
-//        for (int add = low(), j=0; add <= high(); ++add, ++j) {
-//            addresses[j] = format(toArray(add));
-//        }
-//        return addresses;
-//    }
+    public String getHostIP() throws UnknownHostException {
+    	InetAddress localHost = InetAddress.getLocalHost();
+    	StringBuilder SB = new StringBuilder();
+		String local = localHost.getHostAddress();
+		System.out.println(SB);
+		for(char s : local.toCharArray()) {
+		
+			SB.append(s);
+		}
+		String s = new String(SB);
+		SB = new StringBuilder();
+	
+		String[] ipHost = s.split("\\.");
+
+		for(int i = 0; i<ipHost.length; i++) {
+			String j = ipHost[i];
+			System.out.println(j.length());
+			switch(j.length()) {
+			case 0:
+				SB.append("000");
+				break;
+			case 1:
+				SB.append("00");
+				SB.append(j);
+				break;
+			case 2:
+				SB.append("0");
+				SB.append(j);
+			case 3:
+				SB.append(j);
+				break;
+			default:
+				break;
+			}
+    	
+		}
+		System.out.println("Completed "+SB);
+    	return new String(SB);
+    }
 }

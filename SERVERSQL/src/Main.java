@@ -14,7 +14,6 @@ public class Main {
 			account = new SQL("localhost", "3306", "root", "", "account", true);
 			home = new SQL("localhost", "3306", "root", "", "HOMESMART", true);	
 			account.runCommand("-u account");
-
 			account.runCommand("INSERT INTO `account` (`id`, `user`, `pass`)"
 					+ " VALUES (NULL, 'admin', 'password')");
 		}else {
@@ -24,29 +23,45 @@ public class Main {
 			
 		}
 	
-//			try {
-//				IPchecker arduinoIP = new IPchecker();
-//				String[] addressArray = arduinoIP.getIPs();
-//				
-//				for (String address : addressArray) {
-//					System.out.println(address);
-//					Client client = new Client(address, 23, "900\n", true);
-//					ArrayList<String> reply = client.getReceivedArray();
-//					System.out.println(reply);
-//					//if(1 <= reply.size()) {
-//					//	break;
-//					//}
-//				}
-				Thread t = new Thread(new Server(8888));
+			try {
+				IPchecker arduinoIP = new IPchecker();
+				String[] addressArray = arduinoIP.getIPs();
+			boolean ardFound = true;
+			while(ardFound) {
+				for (String address : addressArray) {
+					System.out.println(address);
+					Client client = new Client(address.trim(), 23, "900", 3);
+					client.run();
+					//reply from arduino
+					String res = client.getReceivedString();
+					System.out.println("The reply was: "+ res);
+					if(res != null) {
+						System.out.println("we got one!!!");
+						
+						String iplocal = arduinoIP.getHostIP();	
 
+						System.out.println("IP address "+ iplocal);
+						ArduinoClient aClient = new ArduinoClient(address, 23, iplocal+"\n");
+						aClient.run();
+						ardFound =false;
+						break;
+					}
+//					System.out.println(reply.size());
+//					if(reply.size()-1 >0) {
+//						System.out.println("we got one!!!");
+//						break;
+//					}
+				}
+			}
+				Thread t = new Thread(new Server(8888));
 				t.start();
 
 					
 			
 				
-//			}catch(IOException e) {
-//				e.printStackTrace();
-//			}
+			}catch(IOException e ) {
+				e.printStackTrace();
+			}
 		
 	}
 }

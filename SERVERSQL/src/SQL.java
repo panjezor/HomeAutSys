@@ -71,54 +71,63 @@ public class SQL {
 			}
 			
 	   }
-	   //returns value
-	   public ArrayList<String>  returnCommand(String command, int table, boolean type) {
-		   ArrayList<String>  address = new ArrayList<String>();
-//		   colum=col;
-		  
-		   	ArrayList<String> out = new ArrayList<String>();
-			String[] query = command.split(" ");
-			String state = SQLInput(query);
-			try {
-				stmt = (Statement) conn.createStatement();
-				ResultSet rs = stmt.executeQuery(state);
-				while(rs.next()) {
-					
-					out.add(rs.getString("id"));
-					switch(table) {
-							
-					case 0:
-						out.add(rs.getString("foreginid"));
-						break;
-					case 1:
-						out.add(rs.getString("value"));
-						break;
-					case 2:
-						out.add(rs.getString("state"));
-						break;
-					case 3:
-						out.add(rs.getString("SettingName"));
-						out.add(rs.getString("value"));
-						break;
-						}
-					
-					if(type) {
-						out.add(rs.getString("deviceID"));
-						out.add(rs.getString("timelog"));
-						
+	   //returns value single
+	   public String  returnCommandSingle(String command, int table, boolean type) {
+		   ArrayList<String> array = returnCommandArray( command, table, type);
+		   System.out.println(array);
+		   return array.get(array.size()-1);
+}	
+	   //returns the full string
+	   public ArrayList<String> returnCommandArray(String command, int table, boolean type){
+	   ArrayList<String>  address = new ArrayList<String>();
+//	   colum=col;
+	  
+	   	ArrayList<String> out = new ArrayList<String>();
+		String[] query = command.split(" ");
+		String state = SQLInput(query);
+		try {
+			stmt = (Statement) conn.createStatement();
+			ResultSet rs = stmt.executeQuery(state);
+			while(rs.next()) {
+				
+				out.add(rs.getString("id"));
+				switch(table) {
+
+				case 0:
+					out.add(rs.getString("foreginid"));
+					break;
+				case 1:
+					out.add(rs.getString("value"));
+					break;
+				case 2:
+					out.add(rs.getString("state"));
+					break;
+				case 3:
+					out.add(rs.getString("ipard"));
+					out.add(rs.getString("alarm"));
+					out.add(rs.getString("lightnumber"));
+					out.add(rs.getString("maxtemp"));
+					out.add(rs.getString("tempstate"));
+					out.add(rs.getString("email"));
+					break;
 					}
-	
-				address.add(out.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
-				out.clear();
-				}   
-			}catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-	}
-				return address;
+				
+				if(type) {
+					out.add(rs.getString("deviceID"));
+					out.add(rs.getString("timelog"));
+					
+				}
+
+			address.add(out.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+			out.clear();
+			}   
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 }
-			
-	   
+			return address;
+		   
+	   }
 	    
 	   public boolean accountCheck(String user, String password) {
 			String query = "SELECT COUNT(1) FROM account WHERE user ==" + user +" AND pass=="+password;
@@ -141,6 +150,9 @@ public class SQL {
 			
 		   return false;
 	   }
+	 
+	   
+	   
 	   public boolean verfiy(String db) {
 		   
 		   String query = "use "+db+";";

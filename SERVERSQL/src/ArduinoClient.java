@@ -32,36 +32,19 @@ public class ArduinoClient implements Runnable{
 				//create connection
 				System.out.println("connecting....");
 				client = new Socket(serverName, portConnection);
-
-				BufferedReader in ;
-			
 				PrintWriter out ;
-				
-				
 				System.out.println(client.isConnected());
+				//send command then close
 				if(client.isConnected() == true){
 					out = new PrintWriter(client.getOutputStream());
 					out.print(command);
 					out.close();
 				}
 				
-				System.out.println("helloworld");
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
-		}
-		public static void main(String[] args) {
-				//ArduinoClient a = new ArduinoClient("192.168.1.2", 23, "011\n");
-			//	a.run();
-				
-				ArduinoClient a = new ArduinoClient ("192.168.1.2", 23, "791\n");
-				a.run();
-				//	t.start();
-			
-		
 		}
 	}
-
