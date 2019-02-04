@@ -87,7 +87,9 @@ public class SQL {
 		String state = SQLInput(query);
 		try {
 			stmt = (Statement) conn.createStatement();
+			System.out.println(state);
 			ResultSet rs = stmt.executeQuery(state);
+			
 			while(rs.next()) {
 				
 				out.add(rs.getString("id"));
@@ -100,6 +102,7 @@ public class SQL {
 					out.add(rs.getString("value"));
 					break;
 				case 2:
+					out.add(rs.getString("deviceID"));
 					out.add(rs.getString("state"));
 					break;
 				case 3:
@@ -117,7 +120,7 @@ public class SQL {
 					out.add(rs.getString("timelog"));
 					
 				}
-
+			System.out.println("hello");
 			address.add(out.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
 			out.clear();
 			}   

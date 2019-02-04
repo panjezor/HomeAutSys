@@ -2,8 +2,11 @@
 import java.io.ByteArrayOutputStream;
 	import java.io.DataInputStream;
 	import java.io.DataOutputStream;
-	import java.io.IOException;
-	import java.io.InputStreamReader;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -50,68 +53,65 @@ public class Client implements Runnable{
 				try {
 				client = new Socket(serverName, portConnection);
 				
-				BufferedReader in ;
-				PrintWriter out ;
 				
-				//if connected
-				if(client.isConnected()) {
-				System.out.println(client.isConnected());
-					
-					
-					
-					
-				System.out.println("command starting");
-				//output data
+		        OutputStream serverOut = client.getOutputStream();
+		        DataOutputStream out = new DataOutputStream(serverOut);
+
+		         InputStream inServer = client.getInputStream();
+		         DataInputStream in = new DataInputStream(inServer);
+		         
 				
-				out = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
-				in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				out.println(command);
+				System.out.println(command);
+				out.writeUTF(command);
 			
 				System.out.println("outputing command");
 				
 				//if needing to read any data that needs to be sent back
 				String line;
-				switch(read) {
-					case 0:
-						break;
-					case 1:
-						System.out.println("command send waiting for response(array)");
-						
-						ArrayList<String> array = new ArrayList<String>();
-						
-						while((line = in.readLine()) != null) {
-						System.out.println(line);
-						array.add(line);
-						}
-						
-						setReceivedArray(array);
-					
-						break;
-					case 2:
-						System.out.println("command send waiting for response(String)");
-						line = in.readLine();
-						
-						System.out.println("String recived: " + line);
-						setReceivedString(line);
-						
-						break;
-					//if just to test connection
-					case 3:
-						if(client.isConnected()) {
-							setReceivedString("1");
-						}
-						break;
-					default:
-						in.close();
-						out.close();
-						break;
-				}
+				
+					System.out.println(read);
+					switch(read) {
+						case 0:
+							System.out.println("command send waiting for response(array)");
+							
+							ArrayList<String> array = new ArrayList<String>();
+							
+							try {
+							while((line = in.readUTF()) != null) {
+				
+							System.out.println(line);
+							array.add(line);
+							}
+							
+							setReceivedArray(array);
+							}catch(EOFException e) {
+								
+							}
+							break;
+						case 1:
+							System.out.println("command send waiting for response(String)");
+							
+							
+							System.out.println("String recived: " + in.readUTF());
+							//setReceivedString(line);
+							
+							break;
+						//if just to test connection
+						case 3:
+							if(client.isConnected()) {
+								setReceivedString("1");
+							}
+							break;
+						default:
+			
+							break;
+					}
 				
 				
 					
 					
 				client.close();
-				}
+				
 				System.out.println("System");
 				}catch(ConnectException e) {
 					System.out.println("could not connect");
@@ -144,13 +144,14 @@ public class Client implements Runnable{
 		public static void main(String[] args) {
 			//can be used as a thread but can be used as a simple
 				
-				Client a = new Client(args[0], Integer.parseInt(args[1]), args[2]/*"ard;791;0\n"*/);
-				a.run();
+			Client a = new Client(args[0], Integer.parseInt(args[1]), args[2],  Integer.parseInt(args[3])/*"ard;791;0\n"*/);
+			a.run();
+		
 			
 				
 				
-			//	Thread t = new Thread(new Client("192.168.1.2", 23, "21\n");
-			//	t.start();
+				//Thread t = new Thread(new Client("192.168.1.4", 8888, "ard;81;0\n"));
+				//t.start();
 				
 			
 		

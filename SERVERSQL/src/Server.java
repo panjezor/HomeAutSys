@@ -46,16 +46,19 @@ public class Server extends Thread{
 			System.out.println("Waiting for client on port: "+ serverSocket.getLocalPort());
 			Socket server = serverSocket.accept();
 			System.out.println("CONNECTED TO: " + server.getRemoteSocketAddress());
-			DataOutputStream out = new DataOutputStream(server.getOutputStream());
-			DataInputStream input = new DataInputStream(server.getInputStream());
-			
-
-				System.out.println("connected");
-
-				String s;
-				s = input.readUTF(); 
+			 
+				DataInputStream in = new DataInputStream(server.getInputStream());
+	            String s = in.readUTF();
+	            System.out.println(s);
+	            DataOutputStream out = new DataOutputStream(server.getOutputStream());
 				
-				System.out.println(s);
+	            System.out.println("connected");
+
+		
+		
+			
+				System.out.print("getting command ");
+				 
 					String[] array = s.split(";");
 					String compared = array[0].trim();
 					String command = array[1];
@@ -64,19 +67,20 @@ public class Server extends Thread{
 					if(2<array.length) {
 					arg0 = Integer.parseInt(array[2]);
 					}
-					System.out.println(array);
+					System.out.println(array[3]);
 					
-					
+					System.out.println("comparing ");
 					
 							//sql
-					if(compared=="sql") {
+					if(compared.contains("sql")) {
 						//gets the database to change
 						String database = array[3];
 						SQL connect = new SQL("localhost", "3306", "root", "", database, false);
+						connect.runCommand("use " + database + ";");
 						//get the arguments(such as table and read and write)
 						String arg1 = "";
 						String arg2 = "";
-						if(array.length <=5) {
+						if(array.length >=5) {
 							arg1 = array[4];
 							arg2 = array[5];
 						}
@@ -85,14 +89,20 @@ public class Server extends Thread{
 						switch(arg0) {
 						//gets the data and outputs it in a string array
 						case 0:
-							ArrayList<String> output = connect.returnCommandArray(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));		
+							ArrayList<String> output = connect.returnCommandArray(command, 
+									Integer.parseInt(arg1), 
+									Boolean.parseBoolean(arg2));
+							System.out.println(arg0);
 								for(String data : output) {
 									out.writeUTF(data);
 								}
+								
 							break;
 						case 1:
 							String stringOutput = connect.returnCommandSingle(command, Integer.parseInt(arg1), Boolean.parseBoolean(arg2));
+							System.out.println(stringOutput);
 							out.writeUTF(stringOutput);
+							
 							break;
 						//just runs a command
 						case 2:
@@ -104,15 +114,16 @@ public class Server extends Thread{
 							int acc = (connect.accountCheck(arg1, arg2) ? 1:0);
 							out.write(acc);
 							break;
-						
+					
+					
 						}
-						
+						out.close();
 						//to senddata to arduino
 					}else if(compared.contains("ard")) {
 						for(String S : array) {
 						System.out.println("output to ard" + S);
 						}
-						Client t = new Client(settings.getIPArd().trim(), 23, command+"\n" );
+						ArduinoClient t = new ArduinoClient(settings.getIPArd().trim(), 23, command+"\n" );
 						t.run();
 									
 					}//to send data to andriod
