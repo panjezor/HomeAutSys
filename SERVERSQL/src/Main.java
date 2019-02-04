@@ -10,6 +10,7 @@ public class Main {
 		System.out.println(file);
 		//sets up the system on startup
 		if(file.verfieystate()){
+
 			settings = new SettingsObj(true);
 			account = new SQL("localhost", "3306", "root", "", "account", true);
 			home = new SQL("localhost", "3306", "root", "", "HOMESMART", true);	

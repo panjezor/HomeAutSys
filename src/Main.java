@@ -7,9 +7,9 @@ public class Main {
 		SettingsObj settings;
 		
 		LoadFile file = new LoadFile("state.txt");
-		System.out.println(file);
+
 		//sets up the system on startup
-		if(file.verfieystate()){
+		if(file.verifystate()){
 			settings = new SettingsObj(true);
 			account = new SQL("localhost", "3306", "root", "", "account", true);
 			home = new SQL("localhost", "3306", "root", "", "HOMESMART", true);	

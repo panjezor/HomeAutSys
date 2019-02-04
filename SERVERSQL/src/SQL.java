@@ -1,16 +1,11 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import com.mysql.jdbc.Statement;
 
 
 public class SQL {
 		   private  ArrayList<ArrayList> masterDatabase = null;
 		//install drivers 
-		   private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+		   private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
 		   private String dbUrl;
 		   private static LoadFile sqlf = new LoadFile("sql.txt"), dbInfo = null;
 		   //  Database credentials

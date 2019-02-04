@@ -95,7 +95,7 @@ public class Client implements Runnable{
 		public static void main(String[] args) {
 			//can be used as a thread but can be used as a simple
 				
-				Client a = new Client("192.168.1.4", 8888, "ard;791;0\n");
+				Client a = new Client("127.0.0.1", 8888, "ard;791;0\n");
 				a.run();
 			
 				
